@@ -269,7 +269,9 @@ public interface SqlConformance {
    *
    * <p>Among the built-in conformance levels, false for all.
    */
-  boolean isColonFieldAccessAllowed();
+  default boolean isColonFieldAccessAllowed() {
+    return false;
+  }
 
   /**
    * Whether the bang-equal token != is allowed as an alternative to &lt;&gt; in
