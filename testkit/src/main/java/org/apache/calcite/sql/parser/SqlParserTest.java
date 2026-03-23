@@ -2369,6 +2369,8 @@ public class SqlParserTest {
         .ok("(`V`[OFFSET(1)].`FIELD`)");
     expr.sql("v:[OFFSET(1)][SAFE_ORDINAL(2)]")
         .ok("`V`[OFFSET(1)][SAFE_ORDINAL(2)]");
+    expr.sql("v:[1].foo^(^)")
+        .fails("(?s).*Encountered \"\\(\" at .*");
     expr.sql("v:field[OFFSET(1)]")
         .ok("(`V`.`FIELD`)[OFFSET(1)]");
     expr.sql("arr[1]:field[2]")
@@ -6448,6 +6450,8 @@ public class SqlParserTest {
         .ok("(((`A`[(1 + 2)].`B`).`C`)[2].`D`)");
     expr("a[b[1]].c.f0[d[1]]")
         .ok("((`A`[`B`[1]].`C`).`F0`)[`D`[1]]");
+    expr("a[1].foo^(^)")
+        .fails("(?s).*Encountered \"\\(\" at .*");
   }
 
   @Test void testArrayValueConstructor() {

@@ -3825,8 +3825,11 @@ void AddExpression2b(List<Object> list, ExprContext exprContext) :
         LOOKAHEAD(2, <COLON> <LBRACKET>,
             { this.conformance.isColonFieldAccessAllowed() })
         <COLON>
-        AddBracketAccess(list)
-        AddRegularPostfixes(list)
+        AddBracketPostfix(list)
+        (
+            LOOKAHEAD(2)
+            AddBracketPostfix(list)
+        )*
     ]
 }
 
