@@ -7059,7 +7059,9 @@ List<SqlNode> JsonNameAndValue() :
         }
     |
         <COLON> {
-            if (kvMode) {
+            // If ':' is used for field access, JSON constructors must use
+            // VALUE or comma syntax.
+            if (kvMode || this.conformance.isColonFieldAccessAllowed()) {
                 throw SqlUtil.newContextException(getPos(), RESOURCE.illegalColon());
             }
         }
