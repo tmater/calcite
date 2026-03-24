@@ -9238,12 +9238,14 @@ public class SqlParserTest {
         .ok("JSON_OBJECT(KEY (`V`.`FIELD`) VALUE (`ARR`[1].`FIELD`) NULL ON NULL)");
     expr.sql("json_object(key v:field.field value col)")
         .ok("JSON_OBJECT(KEY ((`V`.`FIELD`).`FIELD`) VALUE `COL` NULL ON NULL)");
-    expr.sql("json_object(v:field, 1)")
+    expr.sql("json_object(v:field value 1)")
         .ok("JSON_OBJECT(KEY (`V`.`FIELD`) VALUE 1 NULL ON NULL)");
-    expr.sql("json_object((v:field), 1)")
-        .ok("JSON_OBJECT(KEY (`V`.`FIELD`) VALUE 1 NULL ON NULL)");
-    expr.sql("json_object('foo'^:^ 'bar')")
-        .fails("(?s).*Encountered \":.*\".*");
+    expr.sql("json_object(v:field^,^ 1)")
+        .fails("(?s).*Unexpected symbol ','. Was expecting 'VALUE'.*");
+    expr.sql("json_object('foo': col^,^ 1)")
+        .fails("(?s).*Unexpected symbol ','. Was expecting 'VALUE'.*");
+    expr.sql("json_object('foo'^,^ 'bar')")
+        .fails("(?s).*Unexpected symbol ','. Was expecting 'VALUE'.*");
   }
 
   @Test void testJsonType() {
@@ -9322,12 +9324,16 @@ public class SqlParserTest {
     expr.sql("json_objectagg(key v:[SAFE_OFFSET(1)] value obj['x']:nested['y'])")
         .ok("JSON_OBJECTAGG(KEY `V`[SAFE_OFFSET(1)] VALUE "
             + "(`OBJ`['x'].`NESTED`)['y'] NULL ON NULL)");
-    expr.sql("json_objectagg(v:field, col)")
+    expr.sql("json_objectagg(v:field value col)")
         .ok("JSON_OBJECTAGG(KEY (`V`.`FIELD`) VALUE `COL` NULL ON NULL)");
     expr.sql("json_objectagg(key v:field.field value col)")
         .ok("JSON_OBJECTAGG(KEY ((`V`.`FIELD`).`FIELD`) VALUE `COL` NULL ON NULL)");
-    expr.sql("json_objectagg('k'^:^ 1)")
-        .fails("(?s).*Encountered \":.*\".*");
+    expr.sql("json_objectagg(v:field^,^ col)")
+        .fails("(?s).*Unexpected symbol ','. Was expecting 'VALUE'.*");
+    expr.sql("json_objectagg('k': [1]^,^ v)")
+        .fails("(?s).*Unexpected symbol ','. Was expecting 'VALUE'.*");
+    expr.sql("json_objectagg('k'^,^ 1)")
+        .fails("(?s).*Unexpected symbol ','. Was expecting 'VALUE'.*");
   }
 
   /** Test case for
